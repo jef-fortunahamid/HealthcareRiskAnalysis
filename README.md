@@ -25,6 +25,7 @@ To achieve these objectives, I'll employ a range of SQL techniques, including bu
 ## Data
 *Source of the data used is from [here](https://www.kaggle.com/datasets/alphiree/cardiovascular-diseases-risk-prediction-dataset), a dataset from Kaggle. Uploaded the `.csv` file into PostgreSQL.*
 
+### Step 1: Understand the Data
 Checking the dataset obtained using the following query:
 ```sql
 SELECT *
@@ -338,6 +339,7 @@ Let's summarise some of the key points:
 - Diabetes: The majority do not have diabetes (259,141), but 40,171 do have it.
 - Skin Cancer: 29,994 individuals have skin cancer, compared to 278,860 who do not.
 
+### Step 2: Identify Key Risk Factors
 Now we have a good understanding of individual variables, the next step is to explore the relationships between them. We'll aim to identify potential risk factors for various health conditions by looking at how they interact with lifestyle variables.
 ```sql
 -- Analyse lifestyle factors vs health conditions
@@ -433,6 +435,7 @@ ORDER BY
 ![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/cb3eff51-0e9f-43ab-9fa1-6ec4e0a9cf64)
 
 Let's summarise this:
+
 **Diabetes, Heart Disease, Skin Cancer, Other Cancer, and Depression Counts**
 - The prevalence of all these conditions tends to generally increase with age, peaking around the age groups 65-69 and 70-74.
 - Diabetes: Peaks in the 70-74 age group with 6760 cases.
@@ -440,9 +443,94 @@ Let's summarise this:
 - Skin Cancer: Peaks in the 80+ age group with 6210 cases.
 - Other Cancer: Peaks in the 70-74 age group with 5535 cases.
 - Depression: Peaks in the 60-64 age group with 6700 cases.
-
 **Younger Age Groups**
 - Even in the youngest age group (18-24), there are instances of all these conditions, notably a significant number of depression cases (4788).
+
+### Step 3: Segment the Population
+In this step, we aim to categorise individuals into different risk levels based on the identified key risk factors. This categorisation can provide actionable groups that healthcare providers can focus on for targeted preventative measures.
+
+We want to segment the population into `High Risk`, `Moderate Risk`, and `Low Risk`, For example for `diabetes` we will based our criteria on factors like BMI, Age, and Exercvise habit, as these have effects on diabetes based on general medical guidelines and the insights we've gathered from the dataset.
+```sql
+--  Segmenting the Population for diabetes_risk_level
+SELECT 
+    CASE
+        WHEN bmi >= 30 AND age_category IN ('60-64', '65-69', '70-74', '75-79', '80+') AND exercise = 'No' THEN 'High Risk'
+        WHEN bmi BETWEEN 25 AND 30 AND age_category IN ('50-54', '55-59', '60-64') AND exercise = 'Yes' THEN 'Medium Risk'
+        ELSE 'Low Risk'
+    END AS diabetes_risk_level,
+    COUNT(*) AS number_of_individuals
+FROM 
+    cardiovascular_health
+GROUP BY 
+    diabetes_risk_level
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/3627f458-6235-4ed1-bf52-9d48885ad5f5)
+
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/3d21d26b-80fe-4600-88e5-09af187a4a48)
+
+```sql
+--  Segmenting the Population for heart_disease_risk_level
+SELECT 
+    CASE
+        WHEN bmi >= 30 AND age_category IN ('60-64', '65-69', '70-74', '75-79', '80+') AND alcohol_consumption >= 10 THEN 'High Risk'
+        WHEN bmi BETWEEN 25 AND 30 AND age_category IN ('50-54', '55-59', '60-64') AND alcohol_consumption < 10 THEN 'Medium Risk'
+        ELSE 'Low Risk'
+    END AS heart_disease_risk_level,
+    COUNT(*) AS number_of_individuals
+FROM 
+    cardiovascular_health
+GROUP BY 
+    heart_disease_risk_level
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/a9d56d18-fcb5-4e0f-bd40-9f2e0a0f0f1d)
+
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/489b9851-b32b-4078-a6bc-1e2fc6adb217)
+
+```sql
+--  Segmenting the Population for depression_risk_level
+SELECT 
+    CASE
+        WHEN bmi >= 30 AND exercise = 'No' AND alcohol_consumption >= 10 THEN 'High Risk'
+        WHEN bmi BETWEEN 25 AND 30 AND exercise = 'Yes' AND alcohol_consumption < 10 THEN 'Medium Risk'
+        ELSE 'Low Risk'
+    END AS depression_risk_level,
+    COUNT(*) AS number_of_individuals
+FROM 
+    cardiovascular_health
+GROUP BY 
+    depression_risk_level
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/6d372ec2-585b-42a1-ac76-bee8bd673ae6)
+
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/71022256-7b52-4dc7-ba45-b1e07f7c3a93)
+
+Now, for `skin_cancer` and `other_cancers`, the segmentation might be slightly be different, as the risk factors can vary from thois of diabetes, heart disease, and depression. From our findings, lifestyle factors didn't show significant variations for individuals with or without cancer. However, we can still create a risk segmentation based on available factors, focusing more  on age categories since the prevalence increases with age.
+```sql
+--  Segmenting the Population for skin_cancer_risk_level
+SELECT 
+    CASE
+        WHEN age_category IN ('65-69', '70-74', '75-79', '80+') THEN 'High Risk'
+        WHEN age_category IN ('50-54', '55-59', '60-64') THEN 'Medium Risk'
+        ELSE 'Low Risk'
+    END AS skin_cancer_risk_level,
+    COUNT(*) AS number_of_individuals
+FROM 
+    cardiovascular_health
+GROUP BY 
+    skin_cancer_risk_level
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/d2a77bd9-2b13-448f-8921-f770a91ba46e)
+
+
+
+
+
+
+
 
 
 
