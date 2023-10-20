@@ -338,7 +338,7 @@ Let's summarise some of the key points:
 - Diabetes: The majority do not have diabetes (259,141), but 40,171 do have it.
 - Skin Cancer: 29,994 individuals have skin cancer, compared to 278,860 who do not.
 
-Now we have a good understanding of individual variables, the next step is to explore the relationships between them We'll aim to identify potential risk factors for various health conditions by looking at how they interact with lifestyle variables.
+Now we have a good understanding of individual variables, the next step is to explore the relationships between them. We'll aim to identify potential risk factors for various health conditions by looking at how they interact with lifestyle variables.
 ```sql
 -- Analyse lifestyle factors vs health conditions
 SELECT 
@@ -402,10 +402,47 @@ GROUP BY
     depression
 ;
 ```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/8a34fdd1-c3e1-4857-9e26-a813d264da1b)
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/ed09d39c-90d4-42d5-a109-532e8a173a60)
 
+Here's the summary of this finding:
+- Depression: People with depression tend to have a higher average BMI and consume less alcohol, fruits, and green vegetables compared to those without depression.
+- Diabetes: The average BMI is highest for individuals with diabetes or pre-diabetes conditions. They also consume less alcohol, fruits, and green vegetables compared to those without diabetes.
+- Heart Disease: Similar to diabetes, those with heart disease tend to have a higher average BMI and lower average alcohol, fruits, and green vegetables consumption.
+- Other Cancer and Skin Cancer: These conditions don't show significant variations in lifestyle factors compared to those without the conditions.
 
+This time we'll explore how the prevalence of health conditions changes across different age groups.
+```sql
+--  Analyse age groups vs health conditions
+SELECT 
+    age_category
+  , COUNT(*) FILTER (WHERE diabetes = 'Yes') AS diabetes_count
+  , COUNT(*) FILTER (WHERE heart_disease = 'Yes') AS heart_disease_count
+  , COUNT(*) FILTER (WHERE skin_cancer = 'Yes') AS skin_cancer_count
+  , COUNT(*) FILTER (WHERE other_cancer = 'Yes') AS other_cancer_count
+  , COUNT(*) FILTER (WHERE depression = 'Yes') AS depression_count
+FROM 
+    cardiovascular_health
+GROUP BY 
+    age_category
+ORDER BY 
+    age_category
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/e81d44ab-2f40-48b2-b2b1-144da0ef64d1)
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/cb3eff51-0e9f-43ab-9fa1-6ec4e0a9cf64)
 
+Let's summarise this:
+**Diabetes, Heart Disease, Skin Cancer, Other Cancer, and Depression Counts**
+- The prevalence of all these conditions tends to generally increase with age, peaking around the age groups 65-69 and 70-74.
+- Diabetes: Peaks in the 70-74 age group with 6760 cases.
+- Heart Disease: Peaks in the 80+ age group with 4856 cases.
+- Skin Cancer: Peaks in the 80+ age group with 6210 cases.
+- Other Cancer: Peaks in the 70-74 age group with 5535 cases.
+- Depression: Peaks in the 60-64 age group with 6700 cases.
 
+**Younger Age Groups**
+- Even in the youngest age group (18-24), there are instances of all these conditions, notably a significant number of depression cases (4788).
 
 
 
