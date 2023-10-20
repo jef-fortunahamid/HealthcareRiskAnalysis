@@ -1,7 +1,7 @@
 # Identifying Key Health Risk Factors with SQL
 
 ## Business Task
-After successfully [Designing a Scalable Database for Greenspot Grocer Using MySQL](https://github.com/jef-fortunahamid/GreenspotGrocerDBDesign) in my last project, I'm tackling a more intricate challenge: analyzing health data to identify key risk factors across different age groups for Synapse Health Analytics. The aim is to help healthcare providers pinpoint and implement preventative measures more effectively. The current dataset is comprehensive but requires a thorough analysis to yield actionable insights. My goal is to use advanced SQL queries to uncover which lifestyle factors are most strongly associated with certain health conditions like diabetes, heart disease, and depression.
+After successfully [Designing a Scalable Database for Greenspot Grocer Using MySQL](https://github.com/jef-fortunahamid/GreenspotGrocerDBDesign) in my last project, I'm tackling a more intricate challenge: analyzing health data to identify key risk factors across different age groups. The aim is to help healthcare providers pinpoint and implement preventative measures more effectively. The current dataset is comprehensive but requires a thorough analysis to yield actionable insights. My goal is to use advanced SQL queries to uncover which lifestyle factors are most strongly associated with certain health conditions like diabetes, heart disease, and depression.
 
 During this project, I'll be focused on answering the following questions:
 
@@ -21,6 +21,7 @@ To achieve these objectives, I'll employ a range of SQL techniques, including bu
 - `ROUND`
 - `CAST`
 - `CASE`
+- `FILTER`
 
 ## Data
 *Source of the data used is from [here](https://www.kaggle.com/datasets/alphiree/cardiovascular-diseases-risk-prediction-dataset), a dataset from Kaggle. Uploaded the `.csv` file into PostgreSQL.*
@@ -525,22 +526,58 @@ GROUP BY
 ```
 ![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/d2a77bd9-2b13-448f-8921-f770a91ba46e)
 
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/906afde1-d258-43e7-93ee-a034cab2f66d)
 
+```sql
+--  Segmenting the Population for other_cancer_risk_level
+SELECT 
+    CASE
+        WHEN age_category IN ('65-69', '70-74', '75-79', '80+') THEN 'High Risk'
+        WHEN age_category IN ('50-54', '55-59', '60-64') THEN 'Medium Risk'
+        ELSE 'Low Risk'
+    END AS other_cancer_risk_level,
+    COUNT(*) AS number_of_individuals
+FROM 
+    cardiovascular_health
+GROUP BY 
+    other_cancer_risk_level
+;
+```
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/f375adc7-0656-4b3c-82f9-7d8c75714d82)
 
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/95e91f8a-6bfc-48ad-b0f6-c3e6b18dacc9)
 
+### Step 4: Recmmendations
+Based on the segmentation and insights gathered, we can propose targeted interventions for healthcare providersvto manage and reduce the risk of diabetes, heart disease, and depression effectively.
 
+**Diabetes**
 
+   ***High Risk***
+	- Implement weight management programs to address high BMI.
+	- Encourage regular exercise and physical activity.
+	- Target educational campaigns for older age groups to raise awareness.
+ 
+   ***Medium Risk***
+   	- Introduce nutritional education focused on maintaining a balanced diet.
+    	- Encourage regular medical check-ups to monitor health parameters.
 
+**Heart Disease**
 
+   ***High Risk***
+	- Limit alcohol consumption through awareness programs.
+ 	- Encourage older adults to engage in mild to moderate exercise.
+  	- Introduce cholesterol and blood pressure monitoring programs.
+ 
+   ***Medium Risk***
+   	- Advocate for balanced alcohol consumption and offer counseling services.
+	- Promote regular cardiovascular screenings for middle-aged individuals.
 
+**Depression**
 
-
-
-
-
-
-
-
-
-
-
+   ***High Risk***
+	- Implement mental health programs focusing on stress management and coping strategies.
+	- Limit alcohol consumption through educational programs.
+ 
+   ***Medium Risk***
+   	- Encourage regular exercise as it can be beneficial for mental health.
+	- Advocate for a balanced diet rich in nutrients that are known to improve mood and mental well-being.
