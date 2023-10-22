@@ -57,6 +57,17 @@ The columns in the dataset are:
 18. green_vegetables_consumption: Amount of green vegetables consumed
 19. fried_potato_consumption: Amount of fried potatoes consumed
 
+If we run this query
+```sqwl
+SELECT
+	COUNT(*)
+FROM 
+	cardiovascular_health;
+```
+we've got 308,854 records.
+
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/d689a853-6357-4260-8b81-c79e81254607)
+
 
 Now we proceed with our data exploration. Identifying and checking for missing or incoistent data. The following queries were used to check for inconsistency and missing values, if there are any. With the queries, our data is not showing of any inconsistency and doesn't have any missing values.
 ```sql
@@ -136,7 +147,7 @@ WHERE
 ORDER BY
 	height_cm ASC;
 ```
-The top end valkues are from 196 to 241 and the bottom end has values ranging from 91 to 149. The lower end is reasonable if there are kids included in our dataset. We'll check the `age_category` column for this.
+The top end values are from 196 to 241 and the bottom end has values ranging from 91 to 149. The lower end is reasonable if there are kids included in our dataset. We'll check the `age_category` column for this.
 ```sql
 -- Checking if there are teenagers and below
 SELECT DISTINCT age_category
@@ -145,6 +156,58 @@ FROM cardiovascular_health;
 ![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/7aef2755-0435-422b-8109-f46640286fef)
 
 We can tell kids are not included in the dataset. However, with further research, we will not exclude these values, as this may be extreme, but looking at their BMI and Weight values, they perfectly coincide with their corresponding height.
+
+Next is to identify if there are any dupolicate records. We can run the following query:
+```sql
+SELECT
+	  general_health
+	, checkup
+	, exercise
+	, heart_disease
+	, skin_cancer
+	, other_cancer
+	, depression
+	, diabetes 
+	, arthritis
+	, sex 
+	, age_category 
+	, height_cm 
+	, weight_kg
+	, bmi 
+	, smoking_history 
+	, alcohol_consumption
+	, fruit_consumption
+	, green_vegetables_consumption
+	, fried_potato_consumption
+	, COUNT(*) AS frequency
+FROM cardiovascular_health
+GROUP BY
+	  general_health
+	, checkup
+	, exercise
+	, heart_disease
+	, skin_cancer
+	, other_cancer
+	, depression
+	, diabetes 
+	, arthritis
+	, sex 
+	, age_category 
+	, height_cm 
+	, weight_kg
+	, bmi 
+	, smoking_history 
+	, alcohol_consumption
+	, fruit_consumption
+	, green_vegetables_consumption
+	, fried_potato_consumption
+HAVING COUNT(*) > 1
+ORDER BY frequency DESC;
+```
+By employing a combination of the SELECT and GROUP BY clauses, the query meticulously groups together records that share identical values across a range of specified columns, effectively pinpointing duplicates. It's the COUNT(*) function, though, that stands out by quantifying these duplicates, giving us a clear picture of the redundancy scale. However, it's the HAVING clause that elevates the query's precision; it filters these groups post-aggregation, ensuring only relevant records (those appearing more than once) are considered. The final touch, the ORDER BY clause, prioritizes these results based on the frequency of duplicates, arranging them in a descending order for easy analysis, which is crucial for data management tasks like cleaning or deduplication. And the result, there are 79 duplicate records.
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/7e10cccc-a8be-40e5-b674-d24626afde34)
+
+
 
 So let's proceed with our Exploratory Data Analysis (EDA). We will run a summary statistics for categorical and numerical variables. We will use `UNION ALL` to have one query to run on each variable type.
 ```sql
