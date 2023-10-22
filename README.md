@@ -17,6 +17,7 @@ To achieve these objectives, I'll employ a range of SQL techniques, including bu
 - `CTE` *(Common Table Expression)*
 - `PERCENTILE_CONT`
 - `SELECT DISTINCT`
+- `HAVING`
 - `MIN`, `MAX`, `AVG`, `STDDEV`
 - `ROUND`
 - `CAST`
