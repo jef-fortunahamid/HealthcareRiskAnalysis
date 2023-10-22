@@ -204,10 +204,47 @@ GROUP BY
 HAVING COUNT(*) > 1
 ORDER BY frequency DESC;
 ```
-By employing a combination of the SELECT and GROUP BY clauses, the query meticulously groups together records that share identical values across a range of specified columns, effectively pinpointing duplicates. It's the COUNT(*) function, though, that stands out by quantifying these duplicates, giving us a clear picture of the redundancy scale. However, it's the HAVING clause that elevates the query's precision; it filters these groups post-aggregation, ensuring only relevant records (those appearing more than once) are considered. The final touch, the ORDER BY clause, prioritizes these results based on the frequency of duplicates, arranging them in a descending order for easy analysis, which is crucial for data management tasks like cleaning or deduplication. And the result, there are 79 duplicate records.
+By using a combination of the SELECT and GROUP BY clauses, the query meticulously groups together records that share identical values across a range of specified columns, effectively pinpointing duplicates. It's the COUNT(*) function, though, that stands out by quantifying these duplicates, giving us a clear picture of the redundancy scale. However, it's the HAVING clause that elevates the query's precision; it filters these groups post-aggregation, ensuring only relevant records (those appearing more than once) are considered. The final touch, the ORDER BY clause, prioritizes these results based on the frequency of duplicates, arranging them in a descending order for easy analysis, which is crucial for data management tasks like cleaning or deduplication. And the result, there are 78 records that appear twice, and one record that appears three times, a total of 80 duplicate records.
+
 ![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/7e10cccc-a8be-40e5-b674-d24626afde34)
 
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/b81837f1-ae3d-4c76-a59e-7408e714242b)
 
+We'll create a temporary table for the rest of our analysis with the unique records. The following query will give us unique records of our dataset:
+```sql
+CREATE TEMP TABLE temp_cardiovascular_health AS
+SELECT DISTINCT
+      general_health
+    , checkup
+    , exercise
+    , heart_disease
+    , skin_cancer
+    , other_cancer
+    , depression
+    , diabetes 
+    , arthritis
+    , sex 
+    , age_category 
+    , height_cm 
+    , weight_kg
+    , bmi 
+    , smoking_history 
+    , alcohol_consumption
+    , fruit_consumption
+    , green_vegetables_consumption
+    , fried_potato_consumption
+FROM cardiovascular_health;
+```
+
+If we run the following query:
+```sql
+SELECT COUNT(*)
+FROM temp_cardiovascular_health;
+```
+
+![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/472cab3e-5e47-449b-b495-c217613abb2c)
+
+We've got 308774 unique records. If we deduct the 80 duoplicates from our origical count, 308854, it will give us 308774.
 
 So let's proceed with our Exploratory Data Analysis (EDA). We will run a summary statistics for categorical and numerical variables. We will use `UNION ALL` to have one query to run on each variable type.
 ```sql
@@ -219,7 +256,7 @@ SELECT
 	, ROUND(CAST(AVG(height_cm) AS NUMERIC), 2) AS average
 	, ROUND(CAST(STDDEV(height_cm) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'bmi' AS Variable
@@ -228,7 +265,7 @@ SELECT
   , ROUND(CAST(AVG(bmi) AS NUMERIC), 2) AS average 
   , ROUND(CAST(STDDEV(bmi) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'alcohol_consumption' AS Variable
@@ -237,7 +274,7 @@ SELECT
   , ROUND(CAST(AVG(alcohol_consumption) AS NUMERIC), 2) AS average
   , ROUND(CAST(STDDEV(alcohol_consumption) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'weight_kg' AS Variable
@@ -246,7 +283,7 @@ SELECT
   , ROUND(CAST(AVG(weight_kg) AS NUMERIC), 2) AS average
   , ROUND(CAST(STDDEV(weight_kg) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'fruit_consumption' AS Variable
@@ -255,7 +292,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS average
   , ROUND(CAST(STDDEV(fruit_consumption) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'green_vegetables_consumption' AS Variable
@@ -264,7 +301,7 @@ SELECT
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS average
   , ROUND(CAST(STDDEV(green_vegetables_consumption) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 UNION ALL
 SELECT
     'fried_potato_consumption' AS Variable
@@ -273,7 +310,7 @@ SELECT
   , ROUND(CAST(AVG(fried_potato_consumption) AS NUMERIC), 2) AS average
   , ROUND(CAST(STDDEV(fried_potato_consumption) AS NUMERIC), 2) AS std_deviation
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 ;
 ```
 ![image](https://github.com/jef-fortunahamid/HealthcareRiskAnalysis/assets/125134025/46f357b8-a17d-4d77-b07c-32d8a552ab44)
@@ -293,7 +330,7 @@ SELECT
   , general_health AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	general_health
 UNION ALL
@@ -302,7 +339,7 @@ SELECT
   , checkup AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	checkup
 UNION ALL
@@ -311,7 +348,7 @@ SELECT
   , exercise AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	exercise
 UNION ALL
@@ -320,7 +357,7 @@ SELECT
   , heart_disease AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	heart_disease
 UNION ALL
@@ -329,7 +366,7 @@ SELECT
   , skin_cancer AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	skin_cancer
 UNION ALL
@@ -338,7 +375,7 @@ SELECT
   , other_cancer AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	other_cancer
 UNION ALL
@@ -347,7 +384,7 @@ SELECT
   , depression AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	depression
 UNION ALL
@@ -356,7 +393,7 @@ SELECT
   , diabetes AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	diabetes
 UNION ALL
@@ -365,7 +402,7 @@ SELECT
   , arthritis AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	arthritis
 UNION ALL
@@ -374,7 +411,7 @@ SELECT
   , sex AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	sex
 UNION ALL
@@ -383,7 +420,7 @@ SELECT
   , age_category AS Category
   , COUNT(*) AS Frequency
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY
 	age_category
 ;
@@ -415,7 +452,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS avg_fruit_consumption
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS avg_green_vegetables_consumption
 FROM
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     diabetes
 UNION ALL
@@ -427,7 +464,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS avg_fruit_consumption
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS avg_green_vegetables_consumption
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     heart_disease
 UNION ALL
@@ -439,7 +476,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS avg_fruit_consumption
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS avg_green_vegetables_consumption
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     skin_cancer
 UNION ALL
@@ -451,7 +488,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS avg_fruit_consumption
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS avg_green_vegetables_consumption
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     other_cancer
 UNION ALL
@@ -463,7 +500,7 @@ SELECT
   , ROUND(CAST(AVG(fruit_consumption) AS NUMERIC), 2) AS avg_fruit_consumption
   , ROUND(CAST(AVG(green_vegetables_consumption) AS NUMERIC), 2) AS avg_green_vegetables_consumption
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     depression
 ;
@@ -488,7 +525,7 @@ SELECT
   , COUNT(*) FILTER (WHERE other_cancer = 'Yes') AS other_cancer_count
   , COUNT(*) FILTER (WHERE depression = 'Yes') AS depression_count
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     age_category
 ORDER BY 
@@ -524,7 +561,7 @@ SELECT
     END AS diabetes_risk_level,
     COUNT(*) AS number_of_individuals
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     diabetes_risk_level
 ;
@@ -543,7 +580,7 @@ SELECT
     END AS heart_disease_risk_level,
     COUNT(*) AS number_of_individuals
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     heart_disease_risk_level
 ;
@@ -562,7 +599,7 @@ SELECT
     END AS depression_risk_level,
     COUNT(*) AS number_of_individuals
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     depression_risk_level
 ;
@@ -582,7 +619,7 @@ SELECT
     END AS skin_cancer_risk_level,
     COUNT(*) AS number_of_individuals
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     skin_cancer_risk_level
 ;
@@ -601,7 +638,7 @@ SELECT
     END AS other_cancer_risk_level,
     COUNT(*) AS number_of_individuals
 FROM 
-    cardiovascular_health
+    temp_cardiovascular_health
 GROUP BY 
     other_cancer_risk_level
 ;
