@@ -539,13 +539,16 @@ ORDER BY
 Let's summarise this:
 
 **Diabetes, Heart Disease, Skin Cancer, Other Cancer, and Depression Counts**
+
 - The prevalence of all these conditions tends to generally increase with age, peaking around the age groups 65-69 and 70-74.
 - Diabetes: Peaks in the 70-74 age group with 6760 cases.
 - Heart Disease: Peaks in the 80+ age group with 4856 cases.
 - Skin Cancer: Peaks in the 80+ age group with 6210 cases.
 - Other Cancer: Peaks in the 70-74 age group with 5535 cases.
 - Depression: Peaks in the 60-64 age group with 6700 cases.
+- 
 **Younger Age Groups**
+  
 - Even in the youngest age group (18-24), there are instances of all these conditions, notably a significant number of depression cases (4788).
 
 ### Step 3: Segment the Population
